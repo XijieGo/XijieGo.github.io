@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Xijie Gong (龚熙杰)</title>
-  <meta name="description" content="Academic homepage of Xijie Gong (龚熙杰). Third-year undergraduate at UESTC, Research Intern at Tsinghua University's College of AI (CAI), Delta-I Lab. Research on foundation models, interpretability, and the science of large language models.">
+  <meta name="description" content="Academic homepage of Xijie Gong (龚熙杰). Third-year undergraduate in Software Engineering at UESTC, research intern at Delta-I Lab, College of AI (CAI), Tsinghua University. Research on foundation models and the science of large language models, spanning knowledge representation, reasoning, and agentic decision-making.">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="style.css">
@@ -40,7 +40,7 @@
         </div>
         <div class="hero-affils">
           <div class="hero-affil">Research Intern, <strong>Delta-I Lab, College of AI (CAI), Tsinghua University</strong></div>
-          <div class="hero-affil">B.Eng. in Software Engineering, <strong>UESTC</strong> (expected 2028)</div>
+          <div class="hero-affil">Undergraduate, Software Engineering, <strong>UESTC</strong> &middot; Expected 2028</div>
         </div>
         <div class="hero-socials">
           <a class="hero-btn" href="mailto:gongxijie99@gmail.com">
@@ -68,10 +68,10 @@
       <h2 class="section-title">About Me</h2>
       <div class="about">
         <p>
-          I am a third-year undergraduate student in Software Engineering at the <strong>University of Electronic Science and Technology of China (UESTC)</strong>, expecting to graduate in 2028. I am currently a research intern at the <a href="https://tonghanwang.github.io/" target="_blank" rel="noopener"><strong>Delta-I Lab</strong></a>, <a href="https://collegeai.tsinghua.edu.cn/en/" target="_blank" rel="noopener"><strong>College of AI (CAI), Tsinghua University</strong></a>. Passionate about large language models and agents, I plan to pursue a Ph.D. and continue advancing research in this field.
+          I am a third-year undergraduate in Software Engineering at the <strong>University of Electronic Science and Technology of China (UESTC)</strong>, expected to graduate in 2028. I am currently a research intern at the <a href="https://tonghanwang.github.io/" target="_blank" rel="noopener"><strong>Delta-I Lab</strong></a>, <a href="https://collegeai.tsinghua.edu.cn/en/" target="_blank" rel="noopener"><strong>College of AI (CAI), Tsinghua University</strong></a>. I plan to pursue a Ph.D. and continue research on foundation models.
         </p>
         <p>
-          My research centers on a fundamental question: <strong>how do foundation models work?</strong> I study how capabilities such as knowledge, reasoning, and agentic behavior arise from the representations and computations within large language models. I am particularly interested in understanding <strong>why</strong> these capabilities emerge and <strong>how</strong> they are realized by the model's internal computation. Ultimately, I hope that a deeper scientific understanding of large language models can reveal principles for building better foundation models.
+          My research focuses on <strong>foundation models</strong> and the <strong>science of large language models</strong>. I am especially interested in <strong>why</strong> model capabilities emerge and <strong>how</strong> learned representations and internal computations give rise to them. My current work examines these questions in knowledge representation, reasoning, and agentic decision-making. My long-term goal is to uncover principles that can guide the design and training of foundation models.
         </p>
         <p class="research-line">
           <strong>Research interests:</strong> Foundation Models &middot; Science of Large Language Models &middot; Interpretability
@@ -95,21 +95,18 @@
           <span class="news-date">2026.07</span>
           <span>I joined the <a href="https://tonghanwang.github.io/" target="_blank" rel="noopener"><strong>Delta-I Lab</strong></a>, <a href="https://collegeai.tsinghua.edu.cn/en/" target="_blank" rel="noopener"><strong>College of AI (CAI), Tsinghua University</strong></a>, as a research intern.</span>
         </div>
-        <div class="news-item">
-          <span class="news-date">2026.06</span>
-          <span>I received the <strong>National Scholarship</strong> (Top 1%) and won <a href="https://robosense2025.github.io/#awards" target="_blank" rel="noopener"><strong>3rd Place in RoboSense 2025 Track 1</strong></a> (<a href="https://github.com/robosense2025/toolkit/blob/main/certificates/Track1_AutoRobots.pdf" target="_blank" rel="noopener">certificate</a>).</span>
-        </div>
       </div>
     </section>
 
     <!-- PUBLICATIONS -->
     <section class="section" id="publications">
-      <h2 class="section-title">Publications &amp; Preprints</h2>
+      <h2 class="section-title">Publication and Competitions</h2>
 
       <div class="pub-filter-row">
         <button class="filter-btn active" onclick="filterPubs('all', this)">All</button>
         <button class="filter-btn" onclick="filterPubs('conference', this)">Conferences</button>
         <button class="filter-btn" onclick="filterPubs('preprint', this)">Preprints</button>
+        <button class="filter-btn" onclick="filterPubs('competition', this)">Competitions</button>
       </div>
 
       <!-- Paper 1: NeurIPS 2026 -->
@@ -123,7 +120,7 @@
           <strong>Xijie Gong</strong>, Tingxu Han, Jiahao Zhang, Wei Song, Ziqi Ding, Hanqi Yan, Youcheng Sun, Lijie Hu
         </div>
         <p class="pub-abstract">
-          Tool calling is central to agentic LLMs, yet the decision mechanism remains poorly understood. We propose minimal contrastive pairs of agentic prompts, isolate a single causally necessary and sufficient decision vector, and demonstrate that tool-use is a scaffold-induced default that non-tool verbs suppress.
+          Tool calling is central to agentic LLMs, yet its internal decision mechanism remains poorly understood. Using minimally contrastive prompts, we identify a localized tool-call vector with causal sufficiency and necessity. We find that the agent scaffold induces a strong prior to call tools, while analysis-oriented requests suppress this prior.
         </p>
         <div class="pub-links">
           <a class="btn-link" href="https://neurips.cc/virtual/2026/poster/148769" target="_blank" rel="noopener">[Paper]</a>
@@ -151,7 +148,7 @@
           <strong>Xijie Gong</strong>, Zimeng Huang, Tonghan Wang
         </div>
         <p class="pub-abstract">
-          Lens methods map activations to single tokens, missing multi-token human concepts. We introduce Concept Lens: token clues guide candidate search, the model scores representations against activations. Evaluated across 2,400 multi-hop clozes on five LLMs (8B&ndash;70B) with causal concept swaps.
+          Concept Lens extends token-level lens methods to multi-token concepts by using token clues to propose candidate concepts and scoring their representations against the source activation. Across 2,400 multi-hop cloze prompts and five LLMs (8B&ndash;70B), it enables multi-token readout and supports causal concept-swap interventions.
         </p>
         <div class="pub-links">
           <a class="btn-link" href="https://arxiv.org/abs/2608.31084" target="_blank" rel="noopener">[arXiv]</a>
@@ -168,21 +165,21 @@
 }</div>
       </div>
 
-      <!-- Paper 3: RoboSense Challenge -->
-      <div class="pub-entry" data-cat="preprint">
+      <!-- Challenge: RoboSense Challenge @ IROS 2025 -->
+      <div class="pub-entry" data-cat="competition">
         <div class="pub-meta">
-          <span class="pub-venue">RoboSense Challenge</span>
-          <span class="pub-track">Autonomous Perception</span>
+          <span class="pub-venue">RoboSense Challenge &middot; IROS 2025</span>
+          <span class="pub-track">Track 1: Driving with Language &mdash; 3rd Place</span>
         </div>
         <h3 class="pub-title">The RoboSense Challenge: Sense Anything, Navigate Anywhere, Adapt Across Platforms</h3>
-        <div class="pub-authors">
-          RoboSense Challenge Committee &amp; Contributors (incl. <strong>Xijie Gong</strong>)
-        </div>
         <p class="pub-abstract">
-          A multi-platform benchmark evaluating general-purpose 3D spatial perception, LiDAR-inertial-visual sensor fusion, and zero-shot platform adaptation.
+          The RoboSense 2025 Challenge unifies five complementary tracks spanning language-grounded decision making, socially compliant navigation, sensor configuration generalization, cross-view and cross-modal correspondence, and cross-platform 3D perception. This report provides standardized datasets, baselines, and unified evaluation protocols for robust robot sensing under domain shifts, and consolidates insights from 23 winning solutions.
         </p>
         <div class="pub-links">
-          <a class="btn-link" href="https://arxiv.org" target="_blank" rel="noopener">[Paper]</a>
+          <a class="btn-link" href="https://arxiv.org/abs/2601.05014" target="_blank" rel="noopener">[Paper]</a>
+          <a class="btn-link" href="https://robosense2025.github.io/" target="_blank" rel="noopener">[Website]</a>
+          <a class="btn-link" href="https://robosense2025.github.io/#awards" target="_blank" rel="noopener">[Results]</a>
+          <a class="btn-link" href="https://github.com/robosense2025/toolkit/blob/main/certificates/Track1_AutoRobots.pdf" target="_blank" rel="noopener">[Certificate]</a>
         </div>
       </div>
     </section>
@@ -226,9 +223,6 @@
           <div class="exp-main">
             <div class="exp-title">University of Electronic Science and Technology of China (UESTC)</div>
             <div class="exp-sub">B.Eng. in Software Engineering (Expected 2028)</div>
-            <div class="exp-desc">
-              Coursework in data structures, algorithms, operating systems, and machine learning.
-            </div>
           </div>
         </div>
       </div>
