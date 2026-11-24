@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Xijie Gong — Blog</title>
+    <link>https://xijiegong.com/blog/</link>
+    <description>Research notes, paper editions, and thoughts on foundation models, the science of LLMs, and interpretability.</description>
+    <language>en</language>
+    <lastBuildDate>Tue, 24 Nov 2026 12:22:11 +0000</lastBuildDate>
+    <atom:link href="https://xijiegong.com/blog/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models</title>
+      <link>https://xijiegong.com/blog/loop-behind/</link>
+      <guid isPermaLink="true">https://xijiegong.com/blog/loop-behind/</guid>
+      <pubDate>Tue, 24 Nov 2026 00:00:00 +0000</pubDate>
+      <description>Looped language models improve performance by repeatedly applying shared layers, with gains commonly attributed to giving the current token extra computation. Disentangling per-token loop count from Loop KV depth on Dory-4B reveals that one loop reading loop-2 KV recovers 6.8 of 7.2 points, unlocking training-free parallel Loop-Behind Decoding.</description>
+      <category>Looped Models</category>
+      <category>KV Cache</category>
+      <category>Efficient Decoding</category>
+      <category>Latent Reasoning</category>
+    </item>
+  </channel>
+</rss>

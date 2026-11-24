@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blog · Xijie Gong (龚熙杰)</title>
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-0JT5H48NFQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-0JT5H48NFQ');
+  </script>
+  <meta name="description" content="Research notes, papers, and reflections on foundation models, the science of LLMs, and interpretability.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://xijiegong.com/blog/">
+  <link rel="alternate" type="application/rss+xml" title="Xijie Gong Blog" href="https://xijiegong.com/blog/feed.xml">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Xijie Gong">
+  <meta property="og:title" content="Blog · Xijie Gong (龚熙杰)">
+  <meta property="og:description" content="Research notes, papers, and reflections on foundation models, the science of LLMs, and interpretability.">
+  <meta property="og:url" content="https://xijiegong.com/blog/">
+  <meta property="og:image" content="https://xijiegong.com/assets/avatar.jpg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Blog · Xijie Gong (龚熙杰)">
+  <meta name="twitter:description" content="Research notes, papers, and reflections on foundation models, the science of LLMs, and interpretability.">
+  <meta name="twitter:image" content="https://xijiegong.com/assets/avatar.jpg">
+  <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg">
+  <link rel="stylesheet" href="../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="../assets/katex/katex.min.css">
+  <link rel="stylesheet" href="../blog/blog.css">
+</head>
+<body id="top">
+
+  <!-- TOP NAVBAR -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a class="nav-brand" href="../">Xijie Gong</a>
+      <ul class="nav-links">
+        <li><a class="nav-link" href="../#about">About</a></li>
+        <li><a class="nav-link" href="../#news">News</a></li>
+        <li><a class="nav-link" href="../#publications">Publications</a></li>
+        <li><a class="nav-link" href="../#experience">Experience</a></li>
+        <li><a class="nav-link" href="../#education">Education</a></li>
+        <li><a class="nav-link" href="../#awards">Honors</a></li>
+        <li><a class="nav-link nav-link-keep active" href="./">Blog</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+    <header class="blog-header">
+      <h1 class="blog-heading">Blog</h1>
+      <p class="blog-lead">
+        Research notes, paper editions, and thoughts on foundation models, the science of large language models, and interpretability.
+      </p>
+    </header>
+
+    <section class="section">
+      <div class="pub-filter-row">
+        <button class="filter-btn active" type="button" onclick="filterPosts('all', this)">All</button>
+        <button class="filter-btn" type="button" onclick='filterPosts("Efficient Decoding", this)'>Efficient Decoding</button>
+        <button class="filter-btn" type="button" onclick='filterPosts("KV Cache", this)'>KV Cache</button>
+        <button class="filter-btn" type="button" onclick='filterPosts("Latent Reasoning", this)'>Latent Reasoning</button>
+        <button class="filter-btn" type="button" onclick='filterPosts("Looped Models", this)'>Looped Models</button>
+      </div>
+      <div class="blog-year-group" data-year="2026">
+        <div class="blog-year-title">2026</div>
+        <div class="post-list">
+          <article class="post-row" data-tags="Looped Models|KV Cache|Efficient Decoding|Latent Reasoning">
+            <div class="post-row-date">2026.11.24</div>
+            <div class="post-row-body">
+              <h2 class="post-row-title"><a href="loop-behind/">Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models</a></h2>
+              <div class="post-row-sub">Extra loops pay off primarily by providing deeper Loop KV for later tokens rather than refining the current token</div>
+              <p class="post-row-excerpt">Looped language models improve performance by repeatedly applying shared layers, with gains commonly attributed to giving the current token extra computation. Disentangling per-token loop count from Loop KV depth on Dory-4B reveals that one loop reading loop-2 KV recovers 6.8 of 7.2 points, unlocking training-free parallel Loop-Behind Decoding.</p>
+              <div class="post-row-meta">
+                <span>27 min read &middot; 5,921 words &middot; Xijie Gong, Tonghan Wang</span><span class="post-row-sep">&middot;</span><span class="post-row-tags"><span>Looped Models</span><span>KV Cache</span><span>Efficient Decoding</span><span>Latent Reasoning</span></span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+      <span>&copy; 2026 Xijie Gong (龚熙杰)</span>
+      <span>Last updated: November 2026</span>
+    </footer>
+  </div>
+
+  <script>
+    function filterPosts(tag, btn) {
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.post-row').forEach(item => {
+        const raw = item.getAttribute('data-tags') || '';
+        const tags = raw ? raw.split('|') : [];
+        item.style.display = (tag === 'all' || tags.includes(tag)) ? '' : 'none';
+      });
+      document.querySelectorAll('.blog-year-group').forEach(g => {
+        const anyVisible = Array.from(g.querySelectorAll('.post-row')).some(i => i.style.display !== 'none');
+        g.style.display = anyVisible ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>

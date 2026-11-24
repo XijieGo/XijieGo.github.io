@@ -15,6 +15,33 @@
     gtag('config', 'G-0JT5H48NFQ');
   </script>
   <meta name="description" content="Academic homepage of Xijie Gong (龚熙杰). Third-year undergraduate in Software Engineering at UESTC. Research on foundation models and the science of large language models, spanning knowledge representation, reasoning, and agentic decision-making.">
+  <link rel="canonical" href="https://xijiegong.com/">
+  <link rel="alternate" type="application/rss+xml" title="Xijie Gong Blog" href="https://xijiegong.com/blog/feed.xml">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Xijie Gong">
+  <meta property="og:title" content="Xijie Gong (龚熙杰)">
+  <meta property="og:description" content="Academic homepage of Xijie Gong (龚熙杰). Research on foundation models, the science of large language models, and interpretability.">
+  <meta property="og:url" content="https://xijiegong.com/">
+  <meta property="og:image" content="https://xijiegong.com/assets/avatar.jpg">
+  <meta name="twitter:card" content="summary">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Xijie Gong",
+    "alternateName": "龚熙杰",
+    "url": "https://xijiegong.com/",
+    "image": "https://xijiegong.com/assets/avatar.jpg",
+    "affiliation": [
+      {"@type": "Organization", "name": "University of Electronic Science and Technology of China (UESTC)"},
+      {"@type": "Organization", "name": "College of AI, Tsinghua University"}
+    ],
+    "sameAs": [
+      "https://github.com/XijieGo",
+      "https://scholar.google.com/citations?user=tP0Wqe4AAAAJ"
+    ]
+  }
+  </script>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="style.css">
@@ -24,7 +51,7 @@
   <!-- TOP NAVBAR -->
   <nav class="navbar">
     <div class="nav-container">
-      <div class="nav-brand">Xijie Gong</div>
+      <a class="nav-brand" href="#home">Xijie Gong</a>
       <ul class="nav-links">
         <li><a class="nav-link" href="#about">About</a></li>
         <li><a class="nav-link" href="#news">News</a></li>
@@ -32,6 +59,7 @@
         <li><a class="nav-link" href="#experience">Experience</a></li>
         <li><a class="nav-link" href="#education">Education</a></li>
         <li><a class="nav-link" href="#awards">Honors</a></li>
+        <li><a class="nav-link nav-link-keep" href="blog/">Blog</a></li>
       </ul>
     </div>
   </nav>
@@ -96,7 +124,7 @@
       <div class="news-list">
         <div class="news-item">
           <span class="news-date">2026.11</span>
-          <span>Our preprint <a href="https://xijiegong.com/loopbehind.pdf" target="_blank" rel="noopener"><strong>"Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models"</strong></a> is available.</span>
+          <span>Our preprint <a href="https://xijiegong.com/loopbehind.pdf" target="_blank" rel="noopener"><strong>"Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models"</strong></a> is available (<a href="blog/loop-behind/">web version</a>).</span>
         </div>
         <div class="news-item">
           <span class="news-date">2026.09</span>
@@ -138,7 +166,7 @@
           <span class="pub-venue">Preprint</span>
           <span class="pub-track">2026</span>
         </div>
-        <h3 class="pub-title">Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models</h3>
+        <h3 class="pub-title"><a href="blog/loop-behind/">Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models</a></h3>
         <div class="pub-authors">
           <strong>Xijie Gong</strong>, Tonghan Wang
         </div>
@@ -147,6 +175,7 @@
         </p>
         <div class="pub-links">
           <a class="btn-link" href="https://xijiegong.com/loopbehind.pdf" target="_blank" rel="noopener">[Paper]</a>
+          <a class="btn-link" href="blog/loop-behind/">[Blog]</a>
           <a class="btn-link" href="https://github.com/XijieGo/LoopBehind" target="_blank" rel="noopener">[Code]</a>
           <button class="btn-link" onclick="toggleBib('bib-loop-behind')">[BibTeX]</button>
         </div>
@@ -313,7 +342,7 @@
     <!-- FOOTER -->
     <footer class="site-footer">
       <span>&copy; 2026 Xijie Gong (龚熙杰)</span>
-      <span>Last updated: October 2026</span>
+      <span>Last updated: November 2026</span>
     </footer>
 
   </div>

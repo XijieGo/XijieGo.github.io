@@ -89,6 +89,11 @@ a:hover {
   color: var(--text-main);
 }
 
+a.nav-brand:hover {
+  color: var(--primary);
+  text-decoration: none;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -102,9 +107,14 @@ a:hover {
   color: var(--text-muted);
 }
 
-.nav-link:hover {
+.nav-link:hover,
+.nav-link.active {
   color: var(--primary);
   text-decoration: none;
+}
+
+.nav-link.active {
+  font-weight: 600;
 }
 
 /* MAIN CONTAINER */
@@ -349,6 +359,15 @@ a:hover {
   color: var(--text-main);
   margin-bottom: 0.4rem;
   text-wrap: pretty;
+}
+
+.pub-title a {
+  color: var(--text-main);
+}
+
+.pub-title a:hover {
+  color: var(--primary);
+  text-decoration: none;
 }
 
 .pub-authors {
@@ -642,7 +661,7 @@ a:hover {
 }
 
 @media (max-width: 620px) {
-  .nav-link {
+  .nav-link:not(.nav-link-keep) {
     display: none;
   }
 
