@@ -756,14 +756,12 @@ def render_blog_index(posts: list[Post]) -> str:
             tag_counts[t] = tag_counts.get(t, 0) + 1
     sorted_tags = sorted(tag_counts.keys(), key=lambda t: (-tag_counts[t], t.lower()))
 
-    filter_html = ""
-    if sorted_tags:
-        btns = ['<button class="filter-btn active" type="button" onclick="filterPosts(\'all\', this)">All</button>']
-        for tag in sorted_tags:
-            btns.append(
-                f"<button class=\"filter-btn\" type=\"button\" onclick='filterPosts({json.dumps(tag)}, this)'>{html.escape(tag)}</button>"
-            )
-        filter_html = '      <div class="pub-filter-row">\n        ' + "\n        ".join(btns) + "\n      </div>\n"
+    btns = ['<button class="filter-btn active" type="button" onclick="filterPosts(\'all\', this)">All</button>']
+    for tag in sorted_tags:
+        btns.append(
+            f"<button class=\"filter-btn\" type=\"button\" onclick='filterPosts({json.dumps(tag)}, this)'>{html.escape(tag)}</button>"
+        )
+    filter_html = '      <div class="pub-filter-row">\n        ' + "\n        ".join(btns) + "\n      </div>\n"
 
     if not posts:
         list_html = '      <div class="blog-empty">No posts published yet.</div>'
@@ -828,9 +826,6 @@ def render_blog_index(posts: list[Post]) -> str:
   <div class="page-wrap">
     <header class="blog-header">
       <h1 class="blog-heading">Blog</h1>
-      <p class="blog-lead">
-        Research notes, paper editions, and thoughts on foundation models, the science of large language models, and interpretability.
-      </p>
     </header>
 
     <section class="section">
@@ -875,9 +870,11 @@ def render_latex_paper_page(post: Post) -> str:
         og_image = f"{SITE_URL}/blog/{post.slug}/figure1.png"
 
     author_names = [a.strip() for a in post.authors.split(",") if a.strip()] or [DEFAULT_AUTHOR]
+    raw_kw = cfg.get("keywords", [])
+    seo_keywords = [str(k).strip() for k in raw_kw] if isinstance(raw_kw, list) and raw_kw else post.tags
     scholar_meta_lines = [
         f'  <meta name="author" content="{html.escape(", ".join(author_names))}">',
-        f'  <meta name="keywords" content="{html.escape(", ".join(post.tags))}">',
+        f'  <meta name="keywords" content="{html.escape(", ".join(seo_keywords))}">',
         f'  <meta property="article:published_time" content="{post.date.isoformat()}">',
         f'  <meta name="citation_title" content="{html.escape(compiled.title)}">',
     ]
@@ -888,8 +885,8 @@ def render_latex_paper_page(post: Post) -> str:
     scholar_meta_lines.append(f'  <meta name="citation_abstract_html_url" content="{canonical_url}">')
     if abs_pdf_url:
         scholar_meta_lines.append(f'  <meta name="citation_pdf_url" content="{html.escape(abs_pdf_url)}">')
-    if post.tags:
-        scholar_meta_lines.append(f'  <meta name="citation_keywords" content="{html.escape("; ".join(post.tags))}">')
+    if seo_keywords:
+        scholar_meta_lines.append(f'  <meta name="citation_keywords" content="{html.escape("; ".join(seo_keywords))}">')
 
     json_ld: dict[str, Any] = {
         "@context": "https://schema.org",
@@ -910,7 +907,7 @@ def render_latex_paper_page(post: Post) -> str:
             for name in author_names
         ],
         "publisher": {"@type": "Person", "name": DEFAULT_AUTHOR, "url": f"{SITE_URL}/"},
-        "keywords": post.tags,
+        "keywords": seo_keywords,
         "inLanguage": "en",
     }
     if og_image:
