@@ -40,6 +40,7 @@ BLOG_DIR = ROOT / "blog"
 SITE_URL = "https://xijiegong.com"
 GA_ID = "G-0JT5H48NFQ"
 DEFAULT_AUTHOR = "Xijie Gong"
+BLOG_CATEGORIES = ["Research", "Thoughts", "Ramblings"]
 
 DEFAULT_KATEX_MACROS: dict[str, str] = {
     r"\R": r"\mathbb{R}",
@@ -93,6 +94,7 @@ class Post:
     slug: str
     title: str
     subtitle: str
+    category: str
     authors: str
     date: dt.date
     date_display: str
@@ -379,6 +381,7 @@ def load_post(
         slug = str(cfg.get("slug", default_slug)).strip().strip("/")
         title = str(cfg.get("title", default_slug)).strip()
         subtitle = str(cfg.get("subtitle", "")).strip()
+        category = str(cfg.get("category", "Research")).strip()
         authors = str(cfg.get("authors", DEFAULT_AUTHOR)).strip()
         post_date = parse_date(
             cfg.get("date"),
@@ -390,6 +393,7 @@ def load_post(
             slug=slug,
             title=title,
             subtitle=subtitle,
+            category=category,
             authors=authors,
             date=post_date,
             date_display=post_date.strftime("%Y.%m.%d"),
@@ -431,6 +435,7 @@ def load_post(
 
     slug = str(meta.get("slug", default_slug)).strip().strip("/")
     subtitle = str(meta.get("subtitle", "")).strip()
+    category = str(meta.get("category", "Thoughts")).strip()
     authors = str(meta.get("authors", DEFAULT_AUTHOR)).strip()
     post_date = parse_date(
         meta.get("date"),
@@ -462,6 +467,7 @@ def load_post(
         slug=slug,
         title=title,
         subtitle=subtitle,
+        category=category,
         authors=authors,
         date=post_date,
         date_display=post_date.strftime("%Y.%m.%d"),
@@ -750,21 +756,15 @@ def render_blog_index(posts: list[Post]) -> str:
     )
     navbar = render_navbar(root_prefix="../", blog_href="./", with_progress=False)
 
-    tag_counts: dict[str, int] = {}
-    for p in posts:
-        for t in p.tags:
-            tag_counts[t] = tag_counts.get(t, 0) + 1
-    sorted_tags = sorted(tag_counts.keys(), key=lambda t: (-tag_counts[t], t.lower()))
-
     btns = ['<button class="filter-btn active" type="button" onclick="filterPosts(\'all\', this)">All</button>']
-    for tag in sorted_tags:
+    for cat in BLOG_CATEGORIES:
         btns.append(
-            f"<button class=\"filter-btn\" type=\"button\" onclick='filterPosts({json.dumps(tag)}, this)'>{html.escape(tag)}</button>"
+            f"<button class=\"filter-btn\" type=\"button\" onclick='filterPosts({json.dumps(cat)}, this)'>{html.escape(cat)}</button>"
         )
     filter_html = '      <div class="pub-filter-row">\n        ' + "\n        ".join(btns) + "\n      </div>\n"
 
     if not posts:
-        list_html = '      <div class="blog-empty">No posts published yet.</div>'
+        list_html = '      <div class="blog-empty" id="blog-empty">Nothing here yet.</div>'
     else:
         groups: dict[int, list[Post]] = {}
         for p in posts:
@@ -773,7 +773,7 @@ def render_blog_index(posts: list[Post]) -> str:
         for year in sorted(groups.keys(), reverse=True):
             items: list[str] = []
             for p in groups[year]:
-                tags_attr = html.escape("|".join(p.tags))
+                cat_attr = html.escape(p.category)
                 draft_html = ' <span class="draft-badge">DRAFT</span>' if p.draft else ""
                 subtitle_html = (
                     f'\n              <div class="post-row-sub">{html.escape(p.subtitle)}</div>'
@@ -785,25 +785,23 @@ def render_blog_index(posts: list[Post]) -> str:
                     if p.summary
                     else ""
                 )
-                meta_parts = [f"{p.reading_minutes} min read"]
+                meta_parts: list[str] = []
+                if p.category:
+                    meta_parts.append(f'<span class="post-row-cat">{html.escape(p.category)}</span>')
+                meta_parts.append(f"{p.reading_minutes} min read")
                 if p.word_count > 0:
                     meta_parts.append(f"{p.word_count:,} words")
                 if p.authors:
                     meta_parts.append(html.escape(p.authors))
                 meta_str = " &middot; ".join(meta_parts)
 
-                tags_html = ""
-                if p.tags:
-                    t_spans = "".join(f"<span>{html.escape(t)}</span>" for t in p.tags)
-                    tags_html = f'<span class="post-row-sep">&middot;</span><span class="post-row-tags">{t_spans}</span>'
-
                 items.append(
-                    f"""          <article class="post-row" data-tags="{tags_attr}">
+                    f"""          <article class="post-row" data-cat="{cat_attr}">
             <div class="post-row-date">{html.escape(p.date_display)}</div>
             <div class="post-row-body">
               <h2 class="post-row-title"><a href="{html.escape(p.slug)}/">{html.escape(p.title)}</a>{draft_html}</h2>{subtitle_html}{excerpt_html}
               <div class="post-row-meta">
-                <span>{meta_str}</span>{tags_html}
+                <span>{meta_str}</span>
               </div>
             </div>
           </article>"""
@@ -816,7 +814,7 @@ def render_blog_index(posts: list[Post]) -> str:
         </div>
       </div>"""
             )
-        list_html = "\n".join(blocks)
+        list_html = "\n".join(blocks) + '\n      <div class="blog-empty" id="blog-empty" style="display:none">Nothing here yet.</div>'
 
     return f"""{head}
 <body id="top">
@@ -837,18 +835,22 @@ def render_blog_index(posts: list[Post]) -> str:
   </div>
 
   <script>
-    function filterPosts(tag, btn) {{
+    function filterPosts(cat, btn) {{
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      let visibleCount = 0;
       document.querySelectorAll('.post-row').forEach(item => {{
-        const raw = item.getAttribute('data-tags') || '';
-        const tags = raw ? raw.split('|') : [];
-        item.style.display = (tag === 'all' || tags.includes(tag)) ? '' : 'none';
+        const itemCat = item.getAttribute('data-cat') || '';
+        const show = (cat === 'all' || itemCat === cat);
+        item.style.display = show ? '' : 'none';
+        if (show) visibleCount++;
       }});
       document.querySelectorAll('.blog-year-group').forEach(g => {{
         const anyVisible = Array.from(g.querySelectorAll('.post-row')).some(i => i.style.display !== 'none');
         g.style.display = anyVisible ? '' : 'none';
       }});
+      const emptyEl = document.getElementById('blog-empty');
+      if (emptyEl) emptyEl.style.display = visibleCount === 0 ? '' : 'none';
     }}
   </script>
 </body>
@@ -1375,7 +1377,7 @@ def build_blog(include_drafts: bool = False, quiet: bool = False) -> list[Post]:
     return all_posts
 
 
-def create_new_post(slug_arg: str, title_arg: str | None) -> Path:
+def create_new_post(slug_arg: str, title_arg: str | None, category_arg: str = "Thoughts") -> Path:
     POSTS_DIR.mkdir(parents=True, exist_ok=True)
     today = dt.date.today().isoformat()
     clean_slug = re.sub(r"[^a-zA-Z0-9_-]+", "-", slug_arg.strip()).strip("-").lower()
@@ -1388,10 +1390,9 @@ def create_new_post(slug_arg: str, title_arg: str | None) -> Path:
 
     template = f"""---
 title: "{title}"
-subtitle: ""
+category: {category_arg}
 authors: "{DEFAULT_AUTHOR}"
 date: {today}
-tags: [Foundation Models, Notes]
 summary: ""
 draft: false
 ---
@@ -1472,12 +1473,13 @@ def main() -> None:
     parser.add_argument("--drafts", action="store_true", help="Include draft: true posts")
     parser.add_argument("--new", metavar="SLUG", help="Create a new post template in posts/")
     parser.add_argument("-t", "--title", help="Title when using --new")
+    parser.add_argument("-c", "--category", choices=BLOG_CATEGORIES, default="Thoughts", help="Category when using --new")
     parser.add_argument("--serve", action="store_true", help="Build, watch posts/, and serve locally")
     parser.add_argument("--port", type=int, default=8000, help="Port for --serve (default: 8000)")
     args = parser.parse_args()
 
     if args.new:
-        create_new_post(args.new, args.title)
+        create_new_post(args.new, args.title, category_arg=args.category)
         build_blog(include_drafts=args.drafts)
         return
 

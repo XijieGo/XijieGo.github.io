@@ -60,22 +60,26 @@
     <section class="section">
       <div class="pub-filter-row">
         <button class="filter-btn active" type="button" onclick="filterPosts('all', this)">All</button>
+        <button class="filter-btn" type="button" onclick='filterPosts("Research", this)'>Research</button>
+        <button class="filter-btn" type="button" onclick='filterPosts("Thoughts", this)'>Thoughts</button>
+        <button class="filter-btn" type="button" onclick='filterPosts("Ramblings", this)'>Ramblings</button>
       </div>
       <div class="blog-year-group" data-year="2026">
         <div class="blog-year-title">2026</div>
         <div class="post-list">
-          <article class="post-row" data-tags="">
+          <article class="post-row" data-cat="Research">
             <div class="post-row-date">2026.11.24</div>
             <div class="post-row-body">
               <h2 class="post-row-title"><a href="loop-behind/">Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models</a></h2>
               <p class="post-row-excerpt">Looped language models improve performance by repeatedly applying shared layers, with gains commonly attributed to giving the current token extra computation. Disentangling per-token loop count from Loop KV depth on Dory-4B reveals that one loop reading loop-2 KV recovers 6.8 of 7.2 points, unlocking training-free parallel Loop-Behind Decoding.</p>
               <div class="post-row-meta">
-                <span>27 min read &middot; 5,921 words &middot; Xijie Gong, Tonghan Wang</span>
+                <span><span class="post-row-cat">Research</span> &middot; 27 min read &middot; 5,921 words &middot; Xijie Gong, Tonghan Wang</span>
               </div>
             </div>
           </article>
         </div>
       </div>
+      <div class="blog-empty" id="blog-empty" style="display:none">Nothing here yet.</div>
     </section>
 
     <!-- FOOTER -->
@@ -86,18 +90,22 @@
   </div>
 
   <script>
-    function filterPosts(tag, btn) {
+    function filterPosts(cat, btn) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
+      let visibleCount = 0;
       document.querySelectorAll('.post-row').forEach(item => {
-        const raw = item.getAttribute('data-tags') || '';
-        const tags = raw ? raw.split('|') : [];
-        item.style.display = (tag === 'all' || tags.includes(tag)) ? '' : 'none';
+        const itemCat = item.getAttribute('data-cat') || '';
+        const show = (cat === 'all' || itemCat === cat);
+        item.style.display = show ? '' : 'none';
+        if (show) visibleCount++;
       });
       document.querySelectorAll('.blog-year-group').forEach(g => {
         const anyVisible = Array.from(g.querySelectorAll('.post-row')).some(i => i.style.display !== 'none');
         g.style.display = anyVisible ? '' : 'none';
       });
+      const emptyEl = document.getElementById('blog-empty');
+      if (emptyEl) emptyEl.style.display = visibleCount === 0 ? '' : 'none';
     }
   </script>
 </body>
