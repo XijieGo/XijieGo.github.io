@@ -95,6 +95,10 @@
       <h2 class="section-title">Recent News</h2>
       <div class="news-list">
         <div class="news-item">
+          <span class="news-date">2026.11</span>
+          <span>Our preprint <a href="https://xijiegong.com/loopbehind.pdf" target="_blank" rel="noopener"><strong>"Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models"</strong></a> is available.</span>
+        </div>
+        <div class="news-item">
           <span class="news-date">2026.09</span>
           <span>Our paper on agentic tool calling was accepted to <a href="https://neurips.cc/virtual/2026/poster/148769" target="_blank" rel="noopener"><strong>NeurIPS 2026</strong></a> as a Main Track Poster.</span>
         </div>
@@ -126,6 +130,34 @@
         <button class="filter-btn" onclick="filterPubs('conference', this)">Conferences</button>
         <button class="filter-btn" onclick="filterPubs('preprint', this)">Preprints</button>
         <button class="filter-btn" onclick="filterPubs('competition', this)">Competitions</button>
+      </div>
+
+      <!-- Loop Behind preprint -->
+      <div class="pub-entry" data-cat="preprint">
+        <div class="pub-meta">
+          <span class="pub-venue">Preprint</span>
+          <span class="pub-track">2026</span>
+        </div>
+        <h3 class="pub-title">Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models</h3>
+        <div class="pub-authors">
+          <strong>Xijie Gong</strong>, Tonghan Wang
+        </div>
+        <p class="pub-abstract">
+          Extra loops in looped language models primarily help by providing deeper key-value states for later tokens. Loop-Behind decoding exploits this finding to closely match multi-loop accuracy with a one-loop KV cache and near-one-loop speed, without retraining.
+        </p>
+        <div class="pub-links">
+          <a class="btn-link" href="https://xijiegong.com/loopbehind.pdf" target="_blank" rel="noopener">[Paper]</a>
+          <a class="btn-link" href="https://github.com/XijieGo/LoopBehind" target="_blank" rel="noopener">[Code]</a>
+          <button class="btn-link" onclick="toggleBib('bib-loop-behind')">[BibTeX]</button>
+        </div>
+        <div class="bibtex-pane" id="bib-loop-behind">
+          <button class="copy-btn" onclick="copyBib('bib-loop-behind')">Copy</button>
+@misc{gong2026loopbehind,
+  title  = {Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models},
+  author = {Gong, Xijie and Wang, Tonghan},
+  year   = {2026},
+  url    = {https://xijiegong.com/loopbehind.pdf}
+}</div>
       </div>
 
       <!-- Paper 1: NeurIPS 2026 -->
