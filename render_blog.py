@@ -826,6 +826,7 @@ def render_blog_index(posts: list[Post]) -> str:
   <div class="page-wrap">
     <header class="blog-header">
       <h1 class="blog-heading">Blog</h1>
+      <p class="blog-lead">A quiet corner for research updates, personal thoughts, and occasional ramblings.</p>
     </header>
 
     <section class="section">

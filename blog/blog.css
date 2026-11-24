@@ -39,7 +39,7 @@
    BLOG INDEX PAGE (/blog/) — Matches index.html .page-wrap (1000px)
    ========================================================================== */
 .blog-header {
-  margin-bottom: 1.35rem;
+  margin-bottom: 1.75rem;
 }
 
 .blog-heading {
@@ -48,14 +48,16 @@
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--text-main);
-  margin-bottom: 0;
+  margin-bottom: 0.35rem;
 }
 
 .blog-lead {
-  font-size: 0.98rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 1.03rem;
   color: var(--text-muted);
   max-width: 45rem;
-  line-height: 1.65;
+  line-height: 1.6;
   text-wrap: pretty;
 }
 
