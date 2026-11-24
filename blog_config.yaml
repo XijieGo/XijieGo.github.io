@@ -1,0 +1,14 @@
+comments:
+  provider: giscus
+  enabled: true
+  repo: XijieGo/XijieGo.github.io
+  repo_id: R_kgDOU4icaQ
+  category: Announcements
+  category_id: DIC_kwDOU4icac4DL4O6
+  mapping: pathname
+  strict: '1'
+  reactions_enabled: '1'
+  emit_metadata: '0'
+  input_position: top
+  theme: noborder_light
+  lang: en

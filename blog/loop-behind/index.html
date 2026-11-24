@@ -46,7 +46,7 @@
   "name": "Loop Behind: Rethinking Where Extra Loops Pay Off in Looped Language Models",
   "description": "Looped language models improve performance by repeatedly applying shared layers, with gains commonly attributed to giving the current token extra computation. Disentangling per-token loop count from Loop KV depth on Dory-4B reveals that one loop reading loop-2 KV recovers 6.8 of 7.2 points, unlocking training-free parallel Loop-Behind Decoding.",
   "datePublished": "2026-11-24",
-  "dateModified": "2026-11-24",
+  "dateModified": "2026-11-25",
   "url": "https://xijiegong.com/blog/loop-behind/",
   "mainEntityOfPage": {
     "@type": "WebPage",
@@ -146,6 +146,7 @@
           <li class=""><a href="#conclusion">9. Conclusion</a></li>
           <li class=""><a href="#impact-statement">Impact Statement</a></li>
           <li class=""><a href="#references">References</a></li>
+          <li class=""><a href="#comments">Comments</a></li>
           </ul>
         </nav>
       </aside>
@@ -177,6 +178,7 @@
           <li class=""><a href="#conclusion">9. Conclusion</a></li>
           <li class=""><a href="#impact-statement">Impact Statement</a></li>
           <li class=""><a href="#references">References</a></li>
+          <li class=""><a href="#comments">Comments</a></li>
             </ul>
           </details>
         </div>
@@ -497,6 +499,28 @@ We do not see ethical concerns beyond those that apply to language models in gen
 <li class="reference-item" id="ref-zhou2026loopkv"><span class="reference-number">[33]</span><div class="reference-content">Zhou, T., Zhang, Y., Wu, T., Wang, Z., Nixon, W., and Yang, J. LoopKV: Loop-Aware KV Cache Compression for Serving Looped Transformers. <em>arXiv preprint arXiv:2611.04137</em>, 2026.</div></li>
 <li class="reference-item" id="ref-zhu2025scaling"><span class="reference-number">[34]</span><div class="reference-content">Zhu, R.-J., Wang, Z., Hua, K., Zhang, T., Li, Z., Que, H., Wei, B., Wen, Z., Yin, F., Xing, H., Li, L., Shi, J., Ma, K., Li, S., Kergan, T., Smith, A., Qu, X., Hui, M., Wu, B., Min, Q., Huang, H., Zhou, X., Ye, W., Liu, J., Yang, J., Shi, Y., Lin, C., Zhao, E., Cai, T., Zhang, G., Huang, W., Bengio, Y., and Eshraghian, J. Scaling Latent Reasoning via Looped Language Models. <em>arXiv preprint arXiv:2510.25741</em>, 2025.</div></li></ol></section>
           </div>
+          <section class="comments-section" id="comments" aria-label="Comments">
+            <h2 class="comments-heading">Comments</h2>
+            <div class="giscus-wrap">
+              <script
+              src="https://giscus.app/client.js"
+              data-repo="XijieGo/XijieGo.github.io"
+              data-repo-id="R_kgDOU4icaQ"
+              data-category="Announcements"
+              data-category-id="DIC_kwDOU4icac4DL4O6"
+              data-mapping="pathname"
+              data-strict="1"
+              data-reactions-enabled="1"
+              data-emit-metadata="0"
+              data-input-position="top"
+              data-theme="noborder_light"
+              data-lang="en"
+              data-loading="lazy"
+              crossorigin="anonymous"
+              async>
+              </script>
+            </div>
+          </section>
         </article>
       </main>
     </div>
@@ -565,18 +589,23 @@ We do not see ethical concerns beyond those that apply to language models in gen
 
     // Sticky TOC active section highlighter
     (function() {
-      const links = Array.from(document.querySelectorAll('#sticky-toc a'));
+      const links = Array.from(document.querySelectorAll('#sticky-toc nav a[href^="#"]'));
       if (!links.length) return;
-      const targets = links
-        .map(a => document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1))))
-        .filter(Boolean);
+      const pairs = links
+        .map(a => ({ a, el: document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1))) }))
+        .filter(p => p.el);
+      if (!pairs.length) return;
       function onScroll() {
         let idx = 0;
-        const y = window.scrollY + 135;
-        for (let i = 0; i < targets.length; i++) {
-          if (targets[i].offsetTop <= y) idx = i;
+        const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 24;
+        if (atBottom) {
+          idx = pairs.length - 1;
+        } else {
+          for (let i = 0; i < pairs.length; i++) {
+            if (pairs[i].el.getBoundingClientRect().top <= 135) idx = i;
+          }
         }
-        links.forEach((a, i) => a.classList.toggle('active', i === idx));
+        pairs.forEach((p, i) => p.a.classList.toggle('active', i === idx));
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();

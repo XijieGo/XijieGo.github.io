@@ -1144,6 +1144,26 @@ table.tex-booktabs tr.tabgroup-row > td {
   color: var(--primary);
 }
 
+/* COMMENTS SECTION (GISCUS) */
+.comments-section {
+  margin-top: 2.8rem;
+  padding-top: 1.65rem;
+  border-top: 1px solid var(--border);
+  scroll-margin-top: 5.5rem;
+}
+
+.comments-heading {
+  font-family: var(--font-heading);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--text-main);
+  margin: 0 0 1rem;
+}
+
+.giscus-wrap {
+  min-height: 120px;
+}
+
 /* READING PAGE FOOTER WRAPPER (Matches index.html max-width: 1000px) */
 .reading-footer-wrap {
   max-width: 1000px;

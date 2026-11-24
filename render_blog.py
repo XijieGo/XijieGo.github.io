@@ -25,6 +25,9 @@ import re
 import shutil
 import threading
 import time
+import urllib.error
+import urllib.parse
+import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -37,6 +40,7 @@ import tex_paper
 ROOT = Path(__file__).resolve().parent
 POSTS_DIR = ROOT / "posts"
 BLOG_DIR = ROOT / "blog"
+CONFIG_PATH = ROOT / "blog_config.yaml"
 SITE_URL = "https://xijiegong.com"
 GA_ID = "G-0JT5H48NFQ"
 DEFAULT_AUTHOR = "Xijie Gong"
@@ -107,6 +111,7 @@ class Post:
     toc: list[TocItem] = field(default_factory=list)
     show_toc: bool = True
     use_math: bool = True
+    comments: bool = True
     draft: bool = False
     macros: dict[str, str] = field(default_factory=dict)
     source_path: Path = Path()
@@ -403,6 +408,7 @@ def load_post(
             word_count=0,
             reading_minutes=1,
             html_body="",
+            comments=bool(cfg.get("comments", True)),
             draft=bool(cfg.get("draft", False)),
             source_path=md_path,
             asset_dir=asset_dir,
@@ -480,6 +486,7 @@ def load_post(
         toc=toc_items,
         show_toc=show_toc,
         use_math=use_math,
+        comments=bool(meta.get("comments", True)),
         draft=draft,
         macros=macros,
         source_path=md_path,
@@ -586,6 +593,58 @@ def render_footer() -> str:
     </footer>"""
 
 
+def load_blog_config() -> dict[str, Any]:
+    if CONFIG_PATH.is_file():
+        return yaml.safe_load(CONFIG_PATH.read_text(encoding="utf-8")) or {}
+    return {}
+
+
+def is_giscus_active(post: Post, site_cfg: dict[str, Any]) -> bool:
+    if not post.comments:
+        return False
+    c = site_cfg.get("comments") or {}
+    return bool(
+        c.get("enabled")
+        and c.get("repo")
+        and c.get("repo_id")
+        and c.get("category")
+        and c.get("category_id")
+    )
+
+
+def render_comments_section(post: Post, site_cfg: dict[str, Any]) -> str:
+    if not is_giscus_active(post, site_cfg):
+        return ""
+    c = site_cfg["comments"]
+    attrs = [
+        ('src', "https://giscus.app/client.js"),
+        ('data-repo', str(c["repo"])),
+        ('data-repo-id', str(c["repo_id"])),
+        ('data-category', str(c["category"])),
+        ('data-category-id', str(c["category_id"])),
+        ('data-mapping', str(c.get("mapping", "pathname"))),
+        ('data-strict', str(c.get("strict", "1"))),
+        ('data-reactions-enabled', str(c.get("reactions_enabled", "1"))),
+        ('data-emit-metadata', str(c.get("emit_metadata", "0"))),
+        ('data-input-position', str(c.get("input_position", "top"))),
+        ('data-theme', str(c.get("theme", "noborder_light"))),
+        ('data-lang', str(c.get("lang", "en"))),
+        ('data-loading', "lazy"),
+        ('crossorigin', "anonymous"),
+    ]
+    attr_str = "\n              ".join(f'{k}="{html.escape(v)}"' for k, v in attrs)
+    return f"""
+          <section class="comments-section" id="comments" aria-label="Comments">
+            <h2 class="comments-heading">Comments</h2>
+            <div class="giscus-wrap">
+              <script
+              {attr_str}
+              async>
+              </script>
+            </div>
+          </section>"""
+
+
 def render_floating_controls() -> str:
     return """<button type="button" id="floating-back-btn" class="floating-btn floating-back-btn" aria-label="Back to previous position" title="Back to previous position">
   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
@@ -640,18 +699,23 @@ SHARED_READING_JS = r"""
 
     // Sticky TOC active section highlighter
     (function() {
-      const links = Array.from(document.querySelectorAll('#sticky-toc a'));
+      const links = Array.from(document.querySelectorAll('#sticky-toc nav a[href^="#"]'));
       if (!links.length) return;
-      const targets = links
-        .map(a => document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1))))
-        .filter(Boolean);
+      const pairs = links
+        .map(a => ({ a, el: document.getElementById(decodeURIComponent(a.getAttribute('href').slice(1))) }))
+        .filter(p => p.el);
+      if (!pairs.length) return;
       function onScroll() {
         let idx = 0;
-        const y = window.scrollY + 135;
-        for (let i = 0; i < targets.length; i++) {
-          if (targets[i].offsetTop <= y) idx = i;
+        const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 24;
+        if (atBottom) {
+          idx = pairs.length - 1;
+        } else {
+          for (let i = 0; i < pairs.length; i++) {
+            if (pairs[i].el.getBoundingClientRect().top <= 135) idx = i;
+          }
         }
-        links.forEach((a, i) => a.classList.toggle('active', i === idx));
+        pairs.forEach((p, i) => p.a.classList.toggle('active', i === idx));
       }
       window.addEventListener('scroll', onScroll, { passive: true });
       onScroll();
@@ -858,7 +922,7 @@ def render_blog_index(posts: list[Post]) -> str:
 """
 
 
-def render_latex_paper_page(post: Post) -> str:
+def render_latex_paper_page(post: Post, site_cfg: dict[str, Any]) -> str:
     compiled = post.compiled_paper
     assert compiled is not None
     cfg = post.paper_config
@@ -937,9 +1001,14 @@ def render_latex_paper_page(post: Post) -> str:
     )
     navbar = render_navbar(root_prefix="../../", blog_href="../", with_progress=True)
 
+    comments_html = render_comments_section(post, site_cfg)
+    toc_entries = list(compiled.toc)
+    if comments_html:
+        toc_entries.append(tex_paper.PaperTocItem(level=2, ident="comments", label="Comments"))
+
     toc_li_html = "\n".join(
         f'          <li class="{"toc-sub" if item.level == 3 else ""}"><a href="#{html.escape(item.ident)}">{html.escape(item.label)}</a></li>'
-        for item in compiled.toc
+        for item in toc_entries
     )
 
     subtitle_html = (
@@ -1023,7 +1092,7 @@ def render_latex_paper_page(post: Post) -> str:
           <div class="post-content">
 {compiled.body_html}
 {compiled.references_html}
-          </div>{tags_footer}
+          </div>{tags_footer}{comments_html}
         </article>
       </main>
     </div>
@@ -1073,7 +1142,12 @@ def render_latex_paper_page(post: Post) -> str:
 """
 
 
-def render_markdown_post_page(post: Post, prev_post: Post | None, next_post: Post | None) -> str:
+def render_markdown_post_page(
+    post: Post,
+    prev_post: Post | None,
+    next_post: Post | None,
+    site_cfg: dict[str, Any],
+) -> str:
     canonical_url = f"{SITE_URL}/blog/{post.slug}/"
     author_names = [a.strip() for a in post.authors.split(",") if a.strip()] or [DEFAULT_AUTHOR]
     extra_meta = "\n".join(
@@ -1117,12 +1191,16 @@ def render_markdown_post_page(post: Post, prev_post: Post | None, next_post: Pos
         meta_parts.append(html.escape(post.authors))
     meta_line = " &middot; ".join(meta_parts)
 
+    comments_html = render_comments_section(post, site_cfg)
     toc_aside_html = ""
     toc_mobile_html = ""
     if post.show_toc:
+        toc_entries = list(post.toc)
+        if comments_html:
+            toc_entries.append(TocItem(level=2, ident="comments", title="Comments"))
         toc_li = "\n".join(
             f'          <li class="{"toc-sub" if item.level == 3 else ""}"><a href="#{html.escape(item.ident)}">{item.title}</a></li>'
-            for item in post.toc
+            for item in toc_entries
         )
         toc_aside_html = f"""      <aside class="sticky-toc" id="sticky-toc" aria-label="Table of Contents">
         <a class="toc-back" href="../">&larr; All Posts</a>
@@ -1208,7 +1286,7 @@ def render_markdown_post_page(post: Post, prev_post: Post | None, next_post: Pos
           </header>
           <div class="post-content">
 {post.html_body}
-          </div>{tags_footer}{nav_html}
+          </div>{tags_footer}{nav_html}{comments_html}
         </article>
       </main>
     </div>
@@ -1341,12 +1419,13 @@ def build_blog(include_drafts: bool = False, quiet: bool = False) -> list[Post]:
             post.word_count = words
             post.reading_minutes = mins
 
+    site_cfg = load_blog_config()
     (BLOG_DIR / "index.html").write_text(render_blog_index(all_posts), encoding="utf-8")
 
     for idx, post in enumerate(all_posts):
         out_dir = BLOG_DIR / post.slug
         if post.is_latex_paper:
-            (out_dir / "index.html").write_text(render_latex_paper_page(post), encoding="utf-8")
+            (out_dir / "index.html").write_text(render_latex_paper_page(post, site_cfg), encoding="utf-8")
             continue
 
         if post.asset_dir is not None:
@@ -1362,7 +1441,7 @@ def build_blog(include_drafts: bool = False, quiet: bool = False) -> list[Post]:
         next_post = all_posts[idx - 1] if idx > 0 else None
         prev_post = all_posts[idx + 1] if idx + 1 < len(all_posts) else None
         (out_dir / "index.html").write_text(
-            render_markdown_post_page(post, prev_post=prev_post, next_post=next_post),
+            render_markdown_post_page(post, prev_post=prev_post, next_post=next_post, site_cfg=site_cfg),
             encoding="utf-8",
         )
 
@@ -1468,15 +1547,56 @@ def serve_local(port: int, include_drafts: bool) -> None:
             print("\nStopped local server.", flush=True)
 
 
+def setup_giscus(preferred_category: str | None = None) -> None:
+    cfg = load_blog_config()
+    comments = cfg.setdefault("comments", {})
+    repo = str(comments.get("repo") or "XijieGo/XijieGo.github.io")
+    api_url = f"https://giscus.app/api/discussions/categories?repo={urllib.parse.quote(repo)}"
+    req = urllib.request.Request(api_url, headers={"User-Agent": "xijiegong-blog-builder"})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        body = exc.read().decode("utf-8", errors="ignore")
+        raise RuntimeError(f"Giscus API returned HTTP {exc.code}: {body}") from exc
+
+    if "error" in data:
+        raise RuntimeError(f"Giscus not ready for {repo}: {data['error']}")
+
+    repo_id = data.get("repositoryId", "")
+    cats = data.get("categories", [])
+    if not repo_id or not cats:
+        raise RuntimeError(f"Could not find repositoryId or Discussion categories in response: {data}")
+
+    wanted = preferred_category or comments.get("category") or "Announcements"
+    chosen = next((c for c in cats if c.get("name", "").lower() == wanted.lower()), None)
+    if chosen is None:
+        chosen = next((c for c in cats if c.get("name", "").lower() == "general"), cats[0])
+
+    comments["enabled"] = True
+    comments["repo"] = repo
+    comments["repo_id"] = repo_id
+    comments["category"] = chosen["name"]
+    comments["category_id"] = chosen["id"]
+    CONFIG_PATH.write_text(yaml.safe_dump(cfg, sort_keys=False, allow_unicode=True), encoding="utf-8")
+    print(f"Giscus configured! repo_id={repo_id}, category={chosen['name']} ({chosen['id']})", flush=True)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build static blog for xijiegong.com")
     parser.add_argument("--drafts", action="store_true", help="Include draft: true posts")
     parser.add_argument("--new", metavar="SLUG", help="Create a new post template in posts/")
     parser.add_argument("-t", "--title", help="Title when using --new")
     parser.add_argument("-c", "--category", choices=BLOG_CATEGORIES, default="Thoughts", help="Category when using --new")
+    parser.add_argument("--setup-giscus", action="store_true", help="Auto-fetch Giscus repo_id & category_id and enable comments")
     parser.add_argument("--serve", action="store_true", help="Build, watch posts/, and serve locally")
     parser.add_argument("--port", type=int, default=8000, help="Port for --serve (default: 8000)")
     args = parser.parse_args()
+
+    if args.setup_giscus:
+        setup_giscus()
+        build_blog(include_drafts=args.drafts)
+        return
 
     if args.new:
         create_new_post(args.new, args.title, category_arg=args.category)

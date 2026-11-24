@@ -20,6 +20,9 @@ python3 render_blog.py
 
 # 3. Local preview with live auto-rebuild (includes drafts)
 python3 render_blog.py --serve --port 8000
+
+# 4. Auto-configure Giscus comments (after enabling Discussions & installing giscus app)
+python3 render_blog.py --setup-giscus
 ```
 
 ## Supported Post Formats
@@ -39,6 +42,7 @@ date: 2026-11-24
 summary: "Short summary shown on /blog/ archive list."
 toc: true            # auto-enabled when >= 2 headings; set false to hide
 math: true           # load local KaTeX (default: true)
+comments: true       # show Giscus comments (default: true; set false to disable on a post)
 draft: false         # set true to hide from normal builds (visible with --drafts or --serve)
 ---
 ```
